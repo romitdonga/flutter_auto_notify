@@ -3,16 +3,12 @@ import 'auto_notify_sdk.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize the AutoNotify SDK with configuration
   await autoNotify.init(
     config: const AutoNotifyConfig(
       notifyInitialize: 1, // Enable the SDK
-      titlePool: [
-        'Hey there!',
-        'Miss you!',
-        'Come back!',
-      ],
+      titlePool: ['Hey there!', 'Miss you!', 'Come back!'],
       bodyPool: [
         'Come back and have fun!',
         'We have new content for you!',
@@ -25,7 +21,7 @@ void main() async {
     ),
     enableDebugLogs: true,
   );
-  
+
   runApp(const MyApp());
 }
 

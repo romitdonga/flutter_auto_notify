@@ -26,6 +26,11 @@ class AutoNotifyManager {
   /// Flutter Local Notifications plugin instance
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+      
+  /// Get the notification plugin instance for testing purposes
+  FlutterLocalNotificationsPlugin getNotificationPlugin() {
+    return _flutterLocalNotificationsPlugin;
+  }
 
   /// Configuration for the notification system
   late AutoNotifyConfig _config;
