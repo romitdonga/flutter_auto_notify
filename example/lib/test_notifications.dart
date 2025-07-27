@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -78,7 +77,9 @@ class NotificationTester {
     );
 
     // Calculate scheduled time (a few seconds from now)
-    final scheduledTime = tz.TZDateTime.now(tz.local).add(Duration(seconds: delaySeconds));
+    final scheduledTime = tz.TZDateTime.now(
+      tz.local,
+    ).add(Duration(seconds: delaySeconds));
 
     // Schedule the notification
     await _flutterLocalNotificationsPlugin.zonedSchedule(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'auto_notify_sdk.dart';
+import 'package:flutter_auto_notify/flutter_auto_notify.dart';
+
 import 'test_notifications.dart';
 
 class NotificationTestApp extends StatefulWidget {

@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'auto_notify_sdk.dart';
+import 'package:flutter_auto_notify/flutter_auto_notify.dart';
+
 import 'notification_test_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize the AutoNotify SDK with configuration
   await autoNotify.init(
     config: const AutoNotifyConfig(
       notifyInitialize: 1, // Enable the SDK
-      titlePool: [
-        'Hey there!',
-        'Miss you!',
-        'Come back!',
-      ],
+      titlePool: ['Hey there!', 'Miss you!', 'Come back!'],
       bodyPool: [
         'Come back and have fun!',
         'We have new content for you!',
@@ -26,7 +23,7 @@ void main() async {
     ),
     enableDebugLogs: true,
   );
-  
+
   runApp(const TestApp());
 }
 
