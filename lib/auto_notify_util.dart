@@ -73,19 +73,25 @@ class AutoNotifyUtil {
       scheduledDate = DateTime(now.year, now.month, now.day);
     }
     
-    // If it's already past the end hour today, schedule for tomorrow
-    if (now.hour >= validHourEnd) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
-    
     // Add random hour and minute
     final randomHour = randomInt(validHourStart, validHourEnd);
     final randomMinute = validMinuteJitter > 0 ? randomInt(0, validMinuteJitter) : 0;
-    
-    return scheduledDate.add(Duration(
+
+    var nextNotificationTime = scheduledDate.add(Duration(
       hours: randomHour,
       minutes: randomMinute,
     ));
+
+    // If the calculated time is in the past, schedule for the next day
+    if (nextNotificationTime.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+      nextNotificationTime = scheduledDate.add(Duration(
+        hours: randomHour,
+        minutes: randomMinute,
+      ));
+    }
+
+    return nextNotificationTime;
   }
 
   /// Formats a DateTime for display or logging
