@@ -5,6 +5,7 @@ library;
 
 export 'auto_notify_config.dart';
 export 'auto_notify_manager.dart';
+export 'notify_analytics.dart';
 
 import 'auto_notify_manager.dart';
 

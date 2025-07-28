@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'auto_notify_sdk.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Create analytics instance
+  final analytics = NotifyAnalytics(
+    onEvent: (String eventName, Map<String, dynamic> parameters) {
+      // Log events to your analytics provider
+      // Example: FirebaseAnalytics.instance.logEvent(name: eventName, parameters: parameters);
+      debugPrint('Notification Analytics event: $eventName, parameters: $parameters');
+    },
+  );
 
   // Initialize the AutoNotify SDK with configuration
   await autoNotify.init(
@@ -20,6 +30,7 @@ void main() async {
       cooldownDays: 1,
     ),
     enableDebugLogs: true,
+    analytics: analytics, // Pass the analytics instance
   );
 
   runApp(const MyApp());
@@ -127,6 +138,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Next notification: ${autoNotify.nextScheduledTime.toString()}',
                 textAlign: TextAlign.center,
               ),
+            const SizedBox(height: 10),
+            Text(
+              'SDK Initialized: ${autoNotify.isInitialized ? "Yes" : "No"}',
+              style: const TextStyle(fontSize: 14),
+            ),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.

@@ -1,8 +1,51 @@
 # Testing the Auto Notify SDK
 
-This document provides guidance on how to test the Auto Notify SDK functionality without waiting for scheduled notifications.
+This document provides guidance on how to test the Auto Notify SDK functionality without waiting for scheduled notifications and how to run the automated test suite.
 
-## Testing Options
+## Automated Tests
+
+The SDK includes a comprehensive test suite to ensure its functionality works as expected.
+
+### Running Tests
+
+To run all tests, use the following command:
+
+```bash
+flutter test
+```
+
+To run a specific test file, use:
+
+```bash
+flutter test test/auto_notify_test.dart
+```
+
+### Test Files
+
+#### auto_notify_test.dart
+
+This file contains unit tests for the core functionality of the SDK, including:
+
+- Utility functions (randomInt, randomItem, randomTitleBody, calculateNextNotificationTime)
+- Configuration loading
+- Notification scheduling logic
+- Permission handling
+
+#### auto_notify_initialize_test.dart
+
+This file tests the SDK's behavior when the `notifyInitialize` flag is set to different values:
+
+- When `notifyInitialize` is 0, the SDK should be disabled but timezone functionality should still work
+- When `notifyInitialize` is non-zero, the SDK should be fully functional
+
+#### widget_test.dart
+
+This file tests the example app's UI components:
+
+- Verifies that the app renders correctly
+- Checks that UI elements like switches and buttons are displayed properly
+
+## Manual Testing Options
 
 ### 1. Using the Notification Test App
 
@@ -69,6 +112,7 @@ Enable debug logs when initializing the SDK:
 await autoNotify.init(
   config: yourConfig,
   enableDebugLogs: true,
+  analytics: yourAnalyticsInstance, // Optional
 );
 ```
 
@@ -96,6 +140,33 @@ Monitor the console for any error messages related to notifications.
 2. Check that the SDK is properly initialized
 3. Ensure that the notification channel is created (Android)
 4. Verify that permissions are granted
+
+### Testing Analytics
+
+To test analytics integration:
+
+1. Create a `NotifyAnalytics` instance with a custom `onEvent` callback:
+
+```dart
+final analytics = NotifyAnalytics(
+  onEvent: (String eventName, Map<String, dynamic> parameters) {
+    // Log events to your analytics provider or print for testing
+    print('Analytics event: $eventName, parameters: $parameters');
+  },
+);
+```
+
+2. Initialize the SDK with this analytics instance:
+
+```dart
+await autoNotify.init(
+  config: yourConfig,
+  analytics: analytics,
+);
+```
+
+3. Perform various actions (enable/disable notifications, trigger notifications)
+4. Verify that the appropriate analytics events are logged
 
 ### Scheduling Issues
 

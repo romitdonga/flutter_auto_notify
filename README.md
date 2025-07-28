@@ -29,9 +29,19 @@ Initialize the SDK in your `main.dart` file:
 
 ```dart
 import 'package:flutter_auto_notify/auto_notify_sdk.dart';
+import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Create analytics instance (optional)
+  final analytics = NotifyAnalytics(
+    onEvent: (String eventName, Map<String, dynamic> parameters) {
+      // Log events to your analytics provider
+      // Example: FirebaseAnalytics.instance.logEvent(name: eventName, parameters: parameters);
+      debugPrint('Notification Analytics event: $eventName, parameters: $parameters');
+    },
+  );
   
   // Initialize the AutoNotify SDK with configuration
   await autoNotify.init(
@@ -53,6 +63,7 @@ void main() async {
       cooldownDays: 1,
     ),
     enableDebugLogs: true, // Set to false in production
+    analytics: analytics, // Optional analytics instance
   );
   
   runApp(const MyApp());
@@ -97,24 +108,31 @@ ElevatedButton(
 | cooldownDays | int | 1 | Minimum full days between notifications |
 | androidChannelId | String | "daily_reminder" | Used on Android notification channel |
 | iconPath | String | "@mipmap/ic_launcher" | Customizable notification icon |
-| analytics | Function(String, Map?)? | null | Callback for analytics events |
+| analytics | NotifyAnalytics? | null | Analytics instance for tracking events |
 
 ## Analytics Events
 
-The SDK provides the following analytics events:
+The SDK provides the following analytics events through the `NotifyAnalytics` class:
 
 | Event Name | Parameters | Description |
-|------------|------------|--------------|
+|------------|------------|--------------||
+| notify_initialized | {config} | SDK was initialized with configuration |
+| notify_permission_requested | {} | Permission was requested from user |
+| notify_permission_granted | {} | User granted notification permission |
 | notify_permission_denied | {} | User denied notification permission |
 | notify_scheduled | {fire_time} | Notification scheduled successfully |
 | notify_fired | {} | Notification was displayed |
 | notify_opened | {} | User tapped on notification |
+| notify_enabled | {} | Notifications were enabled by user |
+| notify_disabled | {} | Notifications were disabled by user |
 
 ## Permission & Toggle Logic
 
-- If `notifyInitialize == 0` → SDK does nothing
+- If `notifyInitialize == 0` → SDK does nothing (timezone functionality still works)
 - If permission denied → Log event and re-ask after 24 hours
 - If permission granted → Schedule notification based on config
+- Notifications are scheduled only once per day within the specified time range
+- Notifications are not rescheduled when the app is opened unless the scheduled time is in the past
 - User can toggle notifications on/off via `setEnabled()`
 
 ## License
