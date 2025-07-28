@@ -37,7 +37,7 @@ class AutoNotifyLogger {
 
   /// Tracks an analytics event with optional parameters
   void trackEvent(String eventName, [Map<String, dynamic>? params]) {
-    debug('Event: $eventName ${params != null ? params : ''}');
+    debug('Event: $eventName ${params ?? ''}');
     analyticsCallback?.call(eventName, params);
   }
 

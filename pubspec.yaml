@@ -19,7 +19,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_local_notifications: ^19.4.0
   shared_preferences: ^2.5.3
-  device_info_plus: ^9.1.2
+  device_info_plus: ^11.5.0
   timezone: ^0.10.0
 
 dev_dependencies:
