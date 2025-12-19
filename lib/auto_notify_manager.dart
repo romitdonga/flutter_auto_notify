@@ -27,7 +27,7 @@ class AutoNotifyManager {
   /// Flutter Local Notifications plugin instance
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-      
+
   /// Get the notification plugin instance for testing purposes
   FlutterLocalNotificationsPlugin getNotificationPlugin() {
     return _flutterLocalNotificationsPlugin;
@@ -38,7 +38,7 @@ class AutoNotifyManager {
 
   /// Logger for debug and analytics
   late AutoNotifyLogger _logger;
-  
+
   /// Analytics for tracking events
   NotifyAnalytics? _analytics;
 
@@ -53,10 +53,10 @@ class AutoNotifyManager {
 
   /// Next scheduled notification time
   DateTime? _nextScheduledTime;
-  
+
   /// Last time permission was requested
   DateTime? _lastPermissionRequest;
-  
+
   /// Whether a notification is currently scheduled
   bool _isNotificationScheduled = false;
 
@@ -65,12 +65,13 @@ class AutoNotifyManager {
 
   /// Shared preferences key for last fire date
   static const String _prefKeyLastFire = 'auto_notify_last_fire';
-  
+
   /// Shared preferences key for next scheduled time
   static const String _prefKeyNextScheduled = 'auto_notify_next_scheduled';
-  
+
   /// Shared preferences key for last permission request
-  static const String _prefKeyLastPermissionRequest = 'auto_notify_last_permission_request';
+  static const String _prefKeyLastPermissionRequest =
+      'auto_notify_last_permission_request';
 
   /// Notification ID for the daily reminder
   static const int _notificationId = 1;
@@ -104,10 +105,10 @@ class AutoNotifyManager {
       );
 
       _logger.debug('Initializing AutoNotify SDK');
-      
+
       // Initialize timezone (even if SDK is disabled, to avoid errors)
       tz_data.initializeTimeZones();
-      
+
       // Load preferences (even if SDK is disabled, to maintain state)
       await _loadPreferences();
 
@@ -117,10 +118,10 @@ class AutoNotifyManager {
         _isInitialized = false;
         return;
       }
-      
+
       // Set initialized to true for non-zero notifyInitialize
       _isInitialized = true;
-      
+
       // Log initialization with analytics
       _analytics?.logInitialized({
         'notifyInitialize': _config.notifyInitialize,
@@ -139,15 +140,18 @@ class AutoNotifyManager {
       if (permissionStatus) {
         _logger.debug('Notification permission granted');
         _analytics?.logPermissionGranted();
-        
+
         if (_isEnabled) {
           // Only schedule a new notification if one isn't already scheduled
           // or if the scheduled time is in the past
-          if (!_isNotificationScheduled || 
-              (_nextScheduledTime != null && _nextScheduledTime!.isBefore(DateTime.now()))) {
+          if (!_isNotificationScheduled ||
+              (_nextScheduledTime != null &&
+                  _nextScheduledTime!.isBefore(DateTime.now()))) {
             await _scheduleNotification();
           } else {
-            _logger.debug('Notification already scheduled for: ${_nextScheduledTime != null ? AutoNotifyUtil.formatDateTime(_nextScheduledTime!) : "unknown"}');
+            _logger.debug(
+              'Notification already scheduled for: ${_nextScheduledTime != null ? AutoNotifyUtil.formatDateTime(_nextScheduledTime!) : "unknown"}',
+            );
           }
         } else {
           _logger.debug('Notifications disabled by user preference');
@@ -168,30 +172,42 @@ class AutoNotifyManager {
   Future<void> _loadPreferences() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Load enabled state (default to true for first-time users)
       _isEnabled = prefs.getBool(_prefKeyEnabled) ?? true;
-      
+
       // Load last fire date
       final lastFireMillis = prefs.getInt(_prefKeyLastFire);
       if (lastFireMillis != null) {
         _lastFireDate = DateTime.fromMillisecondsSinceEpoch(lastFireMillis);
-        _logger.debug('Last notification fired at: ${AutoNotifyUtil.formatDateTime(_lastFireDate!)}');
+        _logger.debug(
+          'Last notification fired at: ${AutoNotifyUtil.formatDateTime(_lastFireDate!)}',
+        );
       }
-      
+
       // Load next scheduled time
       final nextScheduledMillis = prefs.getInt(_prefKeyNextScheduled);
       if (nextScheduledMillis != null) {
-        _nextScheduledTime = DateTime.fromMillisecondsSinceEpoch(nextScheduledMillis);
+        _nextScheduledTime = DateTime.fromMillisecondsSinceEpoch(
+          nextScheduledMillis,
+        );
         _isNotificationScheduled = true;
-        _logger.debug('Next notification scheduled for: ${AutoNotifyUtil.formatDateTime(_nextScheduledTime!)}');
+        _logger.debug(
+          'Next notification scheduled for: ${AutoNotifyUtil.formatDateTime(_nextScheduledTime!)}',
+        );
       }
-      
+
       // Load last permission request time
-      final lastPermissionRequestMillis = prefs.getInt(_prefKeyLastPermissionRequest);
+      final lastPermissionRequestMillis = prefs.getInt(
+        _prefKeyLastPermissionRequest,
+      );
       if (lastPermissionRequestMillis != null) {
-        _lastPermissionRequest = DateTime.fromMillisecondsSinceEpoch(lastPermissionRequestMillis);
-        _logger.debug('Last permission request at: ${AutoNotifyUtil.formatDateTime(_lastPermissionRequest!)}');
+        _lastPermissionRequest = DateTime.fromMillisecondsSinceEpoch(
+          lastPermissionRequestMillis,
+        );
+        _logger.debug(
+          'Last permission request at: ${AutoNotifyUtil.formatDateTime(_lastPermissionRequest!)}',
+        );
       }
     } catch (e, stackTrace) {
       _logger.error('Failed to load preferences', e, stackTrace);
@@ -208,25 +224,34 @@ class AutoNotifyManager {
   Future<void> _savePreferences() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Save enabled state
       await prefs.setBool(_prefKeyEnabled, _isEnabled);
-      
+
       // Save last fire date if available
       if (_lastFireDate != null) {
-        await prefs.setInt(_prefKeyLastFire, _lastFireDate!.millisecondsSinceEpoch);
+        await prefs.setInt(
+          _prefKeyLastFire,
+          _lastFireDate!.millisecondsSinceEpoch,
+        );
       }
-      
+
       // Save next scheduled time if available
       if (_nextScheduledTime != null) {
-        await prefs.setInt(_prefKeyNextScheduled, _nextScheduledTime!.millisecondsSinceEpoch);
+        await prefs.setInt(
+          _prefKeyNextScheduled,
+          _nextScheduledTime!.millisecondsSinceEpoch,
+        );
       } else {
         await prefs.remove(_prefKeyNextScheduled);
       }
-      
+
       // Save last permission request time if available
       if (_lastPermissionRequest != null) {
-        await prefs.setInt(_prefKeyLastPermissionRequest, _lastPermissionRequest!.millisecondsSinceEpoch);
+        await prefs.setInt(
+          _prefKeyLastPermissionRequest,
+          _lastPermissionRequest!.millisecondsSinceEpoch,
+        );
       }
     } catch (e, stackTrace) {
       _logger.error('Failed to save preferences', e, stackTrace);
@@ -237,23 +262,25 @@ class AutoNotifyManager {
   Future<void> _initializeLocalNotifications() async {
     try {
       // Initialize settings for Android
-      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-      
+      const androidSettings = AndroidInitializationSettings(
+        '@mipmap/ic_launcher',
+      );
+
       // Initialize settings for iOS
       const iosSettings = DarwinInitializationSettings();
-      
+
       // Initialize settings for all platforms
       final initSettings = InitializationSettings(
         android: androidSettings,
         iOS: iosSettings,
       );
-      
+
       // Initialize the plugin
       await _flutterLocalNotificationsPlugin.initialize(
         initSettings,
         onDidReceiveNotificationResponse: _onNotificationResponse,
       );
-      
+
       _logger.debug('Local notifications plugin initialized');
     } catch (e, stackTrace) {
       _logger.error('Failed to initialize local notifications', e, stackTrace);
@@ -278,9 +305,10 @@ class AutoNotifyManager {
     try {
       // Check if we should request permission based on last request time
       final now = DateTime.now();
-      final shouldRequestPermission = _lastPermissionRequest == null || 
+      final shouldRequestPermission =
+          _lastPermissionRequest == null ||
           now.difference(_lastPermissionRequest!).inHours >= 24;
-      
+
       if (Platform.isAndroid) {
         // Android permissions are granted at install time for older versions
         // For Android 13+ (API 33+), we need to request permission
@@ -294,7 +322,8 @@ class AutoNotifyManager {
             // Check current permission status without requesting
             final status = await _flutterLocalNotificationsPlugin
                 .resolvePlatformSpecificImplementation<
-                    AndroidFlutterLocalNotificationsPlugin>()
+                  AndroidFlutterLocalNotificationsPlugin
+                >()
                 ?.areNotificationsEnabled();
             return status ?? false;
           }
@@ -323,33 +352,31 @@ class AutoNotifyManager {
     try {
       _logger.debug('Requesting notification permission');
       _analytics?.logPermissionRequested();
-      
+
       // Update last permission request time
       _lastPermissionRequest = DateTime.now();
       await _savePreferences();
-      
+
       // Request permission on iOS
       if (Platform.isIOS) {
         final settings = await _flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
-                IOSFlutterLocalNotificationsPlugin>()
-            ?.requestPermissions(
-              alert: true,
-              badge: true,
-              sound: true,
-            );
+              IOSFlutterLocalNotificationsPlugin
+            >()
+            ?.requestPermissions(alert: true, badge: true, sound: true);
         return settings ?? false;
       }
-      
+
       // Request permission on Android (API 33+)
       if (Platform.isAndroid) {
         final granted = await _flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
+              AndroidFlutterLocalNotificationsPlugin
+            >()
             ?.requestNotificationsPermission();
         return granted ?? false;
       }
-      
+
       return false;
     } catch (e, stackTrace) {
       _logger.error('Error requesting notification permission', e, stackTrace);
@@ -362,14 +389,18 @@ class AutoNotifyManager {
     try {
       // If we already have a scheduled notification in the future, don't reschedule
       final now = DateTime.now();
-      if (_isNotificationScheduled && _nextScheduledTime != null && _nextScheduledTime!.isAfter(now)) {
-        _logger.debug('Notification already scheduled for future time: ${AutoNotifyUtil.formatDateTime(_nextScheduledTime!)}');
+      if (_isNotificationScheduled &&
+          _nextScheduledTime != null &&
+          _nextScheduledTime!.isAfter(now)) {
+        _logger.debug(
+          'Notification already scheduled for future time: ${AutoNotifyUtil.formatDateTime(_nextScheduledTime!)}',
+        );
         return;
       }
-      
+
       // Cancel any existing notifications
       await _cancelNotifications();
-      
+
       // Calculate next notification time
       final nextNotificationTime = AutoNotifyUtil.calculateNextNotificationTime(
         hourStart: _config.hourStart,
@@ -378,31 +409,35 @@ class AutoNotifyManager {
         cooldownDays: _config.cooldownDays,
         lastFireDate: _lastFireDate,
       );
-      
+
       // Ensure the notification time is in the future and within the specified hour range
       final hour = nextNotificationTime.hour;
       if (hour < _config.hourStart || hour > _config.hourEnd) {
-        _logger.error('Calculated notification time outside allowed hours: $hour');
+        _logger.error(
+          'Calculated notification time outside allowed hours: $hour',
+        );
         return;
       }
-      
+
       if (nextNotificationTime.isBefore(now)) {
         _logger.error('Calculated notification time is in the past');
         return;
       }
-      
+
       _nextScheduledTime = nextNotificationTime;
       _isNotificationScheduled = true;
       await _savePreferences();
-      
-      _logger.debug('Scheduling notification for: ${AutoNotifyUtil.formatDateTime(nextNotificationTime)}');
-      
+
+      _logger.debug(
+        'Scheduling notification for: ${AutoNotifyUtil.formatDateTime(nextNotificationTime)}',
+      );
+
       // Get random title and body
       final content = AutoNotifyUtil.randomTitleBody(
         _config.titlePool,
         _config.bodyPool,
       );
-      
+
       // Create Android notification details
       final androidDetails = AndroidNotificationDetails(
         _config.androidChannelId,
@@ -412,20 +447,20 @@ class AutoNotifyManager {
         priority: Priority.high,
         icon: _config.iconPath,
       );
-      
+
       // Create iOS notification details
       const iosDetails = DarwinNotificationDetails(
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
       );
-      
+
       // Create notification details for all platforms
       final notificationDetails = NotificationDetails(
         android: androidDetails,
         iOS: iosDetails,
       );
-      
+
       // Schedule the notification
       await _flutterLocalNotificationsPlugin.zonedSchedule(
         _notificationId,
@@ -433,15 +468,16 @@ class AutoNotifyManager {
         content['body'],
         tz.TZDateTime.from(nextNotificationTime, tz.local),
         notificationDetails,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+
+        //RDX Inexact scheduling avoids exact alarm permissions and Play Store restrictions
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       );
-      
+
       // Track the scheduled event
-      _logger.trackEvent(
-        AutoNotifyLogger.eventScheduled,
-        {'fire_time': AutoNotifyUtil.formatDateTime(nextNotificationTime)},
-      );
-      
+      _logger.trackEvent(AutoNotifyLogger.eventScheduled, {
+        'fire_time': AutoNotifyUtil.formatDateTime(nextNotificationTime),
+      });
+
       // Log with analytics
       _analytics?.logScheduled(nextNotificationTime);
     } catch (e, stackTrace) {
@@ -471,18 +507,18 @@ class AutoNotifyManager {
         _logger.debug('SDK not initialized, cannot set enabled state');
         return;
       }
-      
+
       if (_isEnabled == enabled) {
         return; // No change
       }
-      
+
       _isEnabled = enabled;
       await _savePreferences();
-      
+
       if (_isEnabled) {
         _logger.debug('Notifications enabled by user');
         _analytics?.logEnabled();
-        
+
         // Check permission and schedule if granted
         final permissionStatus = await _checkNotificationPermission();
         if (permissionStatus) {
@@ -507,23 +543,25 @@ class AutoNotifyManager {
       if (Platform.isAndroid) {
         await _flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
-            ?.createNotificationChannel(AndroidNotificationChannel(
-              'auto_notify_channel',
-              'Auto Notifications',
-              description: 'Channel for Auto Notifications',
-              importance: Importance.high,
-            ));
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.createNotificationChannel(
+              AndroidNotificationChannel(
+                'auto_notify_channel',
+                'Auto Notifications',
+                description: 'Channel for Auto Notifications',
+                importance: Importance.high,
+              ),
+            );
       } else if (Platform.isIOS) {
         await _flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
-                IOSFlutterLocalNotificationsPlugin>()
+              IOSFlutterLocalNotificationsPlugin
+            >()
             ?.requestPermissions(alert: true, badge: true, sound: true);
       }
     } catch (e, stackTrace) {
       _logger.error('Failed to open system settings', e, stackTrace);
     }
   }
-
-
 }

@@ -53,7 +53,7 @@ class _NotificationTestAppState extends State<NotificationTestApp> {
       await _notificationTester.sendDelayedTestNotification(
         title: 'Delayed Test',
         body: 'This notification appears after a short delay',
-        delaySeconds: 50,
+        delaySeconds: 5,
       );
       setState(() {
         _status = 'Notification scheduled for 5 seconds from now!';
