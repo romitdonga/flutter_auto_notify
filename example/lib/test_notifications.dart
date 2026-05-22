@@ -39,10 +39,10 @@ class NotificationTester {
 
     // Show the notification immediately
     await _flutterLocalNotificationsPlugin.show(
-      0, // Notification ID
-      title,
-      body,
-      notificationDetails,
+      id: 0, // Notification ID
+      title: title,
+      body: body,
+      notificationDetails: notificationDetails,
       payload: payload,
     );
   }
@@ -83,11 +83,11 @@ class NotificationTester {
 
     // Schedule the notification
     await _flutterLocalNotificationsPlugin.zonedSchedule(
-      1, // Notification ID
-      title,
-      body,
-      scheduledTime,
-      notificationDetails,
+      id: 1, // Notification ID
+      title: title,
+      body: body,
+      scheduledDate: scheduledTime,
+      notificationDetails: notificationDetails,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: payload,
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'auto_notify_sdk.dart';
 
 void main() async {
@@ -10,7 +9,9 @@ void main() async {
     onEvent: (String eventName, Map<String, dynamic> parameters) {
       // Log events to your analytics provider
       // Example: FirebaseAnalytics.instance.logEvent(name: eventName, parameters: parameters);
-      debugPrint('Notification Analytics event: $eventName, parameters: $parameters');
+      debugPrint(
+        'Notification Analytics event: $eventName, parameters: $parameters',
+      );
     },
   );
 

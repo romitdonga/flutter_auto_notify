@@ -277,7 +277,7 @@ class AutoNotifyManager {
 
       // Initialize the plugin
       await _flutterLocalNotificationsPlugin.initialize(
-        initSettings,
+        settings: initSettings,
         onDidReceiveNotificationResponse: _onNotificationResponse,
       );
 
@@ -463,11 +463,11 @@ class AutoNotifyManager {
 
       // Schedule the notification
       await _flutterLocalNotificationsPlugin.zonedSchedule(
-        _notificationId,
-        content['title'],
-        content['body'],
-        tz.TZDateTime.from(nextNotificationTime, tz.local),
-        notificationDetails,
+        id: _notificationId,
+        title: content['title'],
+        body: content['body'],
+        scheduledDate: tz.TZDateTime.from(nextNotificationTime, tz.local),
+        notificationDetails: notificationDetails,
 
         //RDX Inexact scheduling avoids exact alarm permissions and Play Store restrictions
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -488,7 +488,7 @@ class AutoNotifyManager {
   /// Cancels all pending notifications
   Future<void> _cancelNotifications() async {
     try {
-      await _flutterLocalNotificationsPlugin.cancel(_notificationId);
+      await _flutterLocalNotificationsPlugin.cancel(id: _notificationId);
       _isNotificationScheduled = false;
       _nextScheduledTime = null;
       await _savePreferences();

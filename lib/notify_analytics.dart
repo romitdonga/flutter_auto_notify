@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
-
 /// A callback function type for handling analytics events
-typedef AnalyticsCallback = void Function(String eventName, Map<String, dynamic> parameters);
+typedef AnalyticsCallback =
+    void Function(String eventName, Map<String, dynamic> parameters);
 
 /// Analytics events for the auto notification system
 class NotifyAnalytics {
@@ -69,7 +68,7 @@ class NotifyAnalytics {
   /// Formats a DateTime for logging
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.year}-${_pad(dateTime.month)}-${_pad(dateTime.day)} '
-           '${_pad(dateTime.hour)}:${_pad(dateTime.minute)}:${_pad(dateTime.second)}';
+        '${_pad(dateTime.hour)}:${_pad(dateTime.minute)}:${_pad(dateTime.second)}';
   }
 
   /// Pads a number with leading zero if needed
